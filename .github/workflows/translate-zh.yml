@@ -106,10 +106,18 @@ jobs:
 
       - name: Translate changed/added files
         env:
-          TRANSLATE_BACKEND: ${{ vars.TRANSLATE_BACKEND || 'claude' }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TRANSLATE_BACKEND: ${{ vars.TRANSLATE_BACKEND || 'openai' }}
+          # OpenAI-compatible (default backend)
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ vars.OPENAI_BASE_URL }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+          # Claude
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: ${{ vars.ANTHROPIC_BASE_URL }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL }}
+          # DeepL
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          DEEPL_BASE_URL: ${{ vars.DEEPL_BASE_URL }}
         run: |
           if [ ! -s /tmp/changed.txt ]; then
             echo "No changed/added md to translate."

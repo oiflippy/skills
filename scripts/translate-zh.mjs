@@ -4,10 +4,19 @@
 // Usage: node scripts/translate-zh.mjs <input.md> <output.md>
 //
 // Env:
-//   TRANSLATE_BACKEND  : claude | openai | deepl  (default: claude)
-//   ANTHROPIC_API_KEY  : required when backend=claude
-//   OPENAI_API_KEY     : required when backend=openai
-//   DEEPL_API_KEY      : required when backend=deepl
+//   TRANSLATE_BACKEND     : openai | claude | deepl   (default: openai)
+//
+//   OPENAI_API_KEY        : required when backend=openai
+//   OPENAI_BASE_URL       : default https://api.openai.com/v1
+//   OPENAI_MODEL          : default gpt-4o-mini
+//
+//   ANTHROPIC_API_KEY     : required when backend=claude
+//   ANTHROPIC_BASE_URL    : default https://api.anthropic.com
+//   ANTHROPIC_MODEL       : default claude-haiku-4-5-20251001
+//
+//   DEEPL_API_KEY         : required when backend=deepl
+//   DEEPL_BASE_URL        : default https://api-free.deepl.com (free key)
+//                           use https://api.deepl.com for a Pro key
 //
 // Skeleton mode: when the selected key is absent, the file is written as-is
 // with a visible "pending translation" marker so the pipeline runs end-to-end.
@@ -21,11 +30,31 @@ if (!input || !output) {
   process.exit(1);
 }
 
-const BACKEND = process.env.TRANSLATE_BACKEND || "claude";
-const KEY =
-  BACKEND === "claude" ? process.env.ANTHROPIC_API_KEY :
-  BACKEND === "openai" ? process.env.OPENAI_API_KEY :
-  BACKEND === "deepl" ? process.env.DEEPL_API_KEY : undefined;
+const BACKEND = process.env.TRANSLATE_BACKEND || "openai";
+
+// Per-backend config. Key absent → skeleton mode.
+const CONFIG = {
+  openai: {
+    key: process.env.OPENAI_API_KEY,
+    baseUrl: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
+    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+  },
+  claude: {
+    key: process.env.ANTHROPIC_API_KEY,
+    baseUrl: process.env.ANTHROPIC_BASE_URL || "https://api.anthropic.com",
+    model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+  },
+  deepl: {
+    key: process.env.DEEPL_API_KEY,
+    baseUrl: process.env.DEEPL_BASE_URL || "https://api-free.deepl.com",
+  },
+};
+
+if (!CONFIG[BACKEND]) {
+  console.error(`Unknown backend: ${BACKEND} (use openai | claude | deepl)`);
+  process.exit(1);
+}
+const KEY = CONFIG[BACKEND].key;
 
 const PROMPT =
   "Translate the following Markdown text to Simplified Chinese (简体中文). " +
@@ -77,15 +106,16 @@ async function translateText(text) {
 }
 
 async function translateClaude(text) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const { key, baseUrl, model } = CONFIG.claude;
+  const res = await fetch(`${baseUrl}/v1/messages`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": KEY,
+      "x-api-key": key,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
+      model,
       max_tokens: 8192,
       messages: [{ role: "user", content: `${PROMPT}\n\n${text}` }],
     }),
@@ -96,14 +126,15 @@ async function translateClaude(text) {
 }
 
 async function translateOpenAI(text) {
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+  const { key, baseUrl, model } = CONFIG.openai;
+  const res = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${KEY}`,
+      authorization: `Bearer ${key}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini",
+      model,
       messages: [{ role: "user", content: `${PROMPT}\n\n${text}` }],
     }),
   });
@@ -113,11 +144,12 @@ async function translateOpenAI(text) {
 }
 
 async function translateDeepL(text) {
-  const res = await fetch("https://api-free.deepl.com/v2/translate", {
+  const { key, baseUrl } = CONFIG.deepl;
+  const res = await fetch(`${baseUrl}/v2/translate`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      auth_key: KEY,
+      auth_key: key,
       text,
       target_lang: "ZH",
       tag_handling: "markdown",
