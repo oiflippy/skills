@@ -1,0 +1,137 @@
+name: Translate to Chinese
+
+# Maintains a `zh` branch that mirrors upstream `main`, with in-scope Markdown
+# files translated to Simplified Chinese. Only files changed/added since the
+# last run are (re)translated; everything else is reused as-is.
+#
+# Triggers:
+#   - after the sync-upstream workflow finishes (so translations track syncs)
+#   - manually via the Actions UI ("Run workflow"), with optional force-full-run
+
+on:
+  workflow_run:
+    workflows: ["Sync upstream"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      force_full:
+        description: "Re-translate every in-scope file (ignore last-sync marker)"
+        required: false
+        default: "false"
+
+concurrency: translate-zh
+
+jobs:
+  translate:
+    name: Incremental translate to zh branch
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'failure' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure zh branch exists
+        run: |
+          if git ls-remote --heads origin zh | grep -q zh; then
+            git fetch origin zh:zh
+          else
+            git checkout -b zh origin/main
+          fi
+
+      - name: Compute changed in-scope Markdown
+        id: diff
+        run: |
+          git checkout zh
+          MAIN_SHA=$(git rev-parse origin/main)
+          echo "main_sha=$MAIN_SHA" >> "$GITHUB_OUTPUT"
+
+          # In-scope paths: skills/, docs/, plus root README.md and CONTEXT.md.
+          SCOPE=(skills docs README.md CONTEXT.md)
+
+          FORCE="${{ github.event.inputs.force_full }}"
+          LAST=$(git show zh:.last-upstream-sync 2>/dev/null | tr -d '[:space:]' || true)
+          if [ "$FORCE" = "true" ] || [ -z "$LAST" ]; then
+            BASE=4b825dc642cb6eb9a060e54bf8d69288fbee4904  # empty tree → everything is "added"
+          else
+            BASE="$LAST"
+          fi
+
+          # name-status diff, scoped to the in-scope paths.
+          git diff --name-status "$BASE" origin/main -- "${SCOPE[@]}" > /tmp/raw.diff
+
+          # Build A/M and D lists for *.md only.
+          grep -E '^[AM]\s+.*\.md$' /tmp/raw.diff | sed -E 's/^[AM]\s+//' | sort > /tmp/changed.txt || true
+          grep -E '^D\s+.*\.md$'   /tmp/raw.diff | sed -E 's/^D\s+//'   | sort > /tmp/deleted.txt || true
+
+          # All in-scope md currently in origin/main.
+          git ls-tree -r --name-only origin/main -- "${SCOPE[@]}" | grep '\.md$' | sort > /tmp/inscope.txt
+
+          # Unchanged = in-scope md not in changed or deleted.
+          comm -23 /tmp/inscope.txt <(cat /tmp/changed.txt /tmp/deleted.txt 2>/dev/null | sort -u) > /tmp/unchanged.txt || true
+
+          echo "Changed/added md:   $(wc -l < /tmp/changed.txt)"
+          echo "Deleted md:         $(wc -l < /tmp/deleted.txt)"
+          echo "Unchanged md:       $(wc -l < /tmp/unchanged.txt)"
+
+      - name: Reset zh worktree to origin/main
+        # Bring the whole tree (code + docs) up to main. Translated md gets
+        # restored from the zh branch for unchanged files, and retranslated
+        # for changed ones, in the steps below.
+        run: git read-tree --reset -u origin/main
+
+      - name: Restore unchanged translations from zh
+        run: |
+          while IFS= read -r P; do
+            [ -z "$P" ] && continue
+            if git cat-file -e "zh:$P" 2>/dev/null; then
+              git checkout zh -- "$P"
+            fi
+          done < /tmp/unchanged.txt
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Translate changed/added files
+        env:
+          TRANSLATE_BACKEND: ${{ vars.TRANSLATE_BACKEND || 'claude' }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: |
+          if [ ! -s /tmp/changed.txt ]; then
+            echo "No changed/added md to translate."
+            exit 0
+          fi
+          while IFS= read -r P; do
+            [ -z "$P" ] && continue
+            # Skip the marker file itself if it ever matches.
+            [ "$P" = ".last-upstream-sync" ] && continue
+            node scripts/translate-zh.mjs "$P" "$P"
+          done < /tmp/changed.txt
+
+      - name: Record last-synced upstream SHA
+        run: |
+          echo "${{ steps.diff.outputs.main_sha }}" > .last-upstream-sync
+
+      - name: Commit and push zh
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(zh): sync + translate upstream ${{ steps.diff.outputs.main_sha }}"
+          git push origin zh
