@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Issue tracker: GitLab
 
 Issues and PRDs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations.

@@ -3,6 +3,7 @@ name: ask-matt
 description: Ask which skill or flow fits your situation. A router over the user-invoked skills in this repo.
 disable-model-invocation: true
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 # Ask Matt
 

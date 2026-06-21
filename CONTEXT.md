@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Matt Pocock Skills
 
 A collection of agent skills (slash commands and behaviors) loaded by Claude Code. Skills are organized into buckets and consumed by per-repo configuration emitted by `/setup-matt-pocock-skills`.

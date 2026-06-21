@@ -3,6 +3,7 @@ name: improve-codebase-architecture
 description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
 disable-model-invocation: true
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 # Improve Codebase Architecture
 

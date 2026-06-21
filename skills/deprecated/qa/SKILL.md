@@ -2,6 +2,7 @@
 name: qa
 description: Interactive QA session where user reports bugs or issues conversationally, and the agent files GitHub issues. Explores the codebase in the background for context and domain language. Use when user wants to report bugs, do QA, file issues conversationally, or mentions "QA session".
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 # QA Session
 
@@ -121,7 +122,7 @@ When creating a breakdown:
 - **Use the project's domain language** (check UBIQUITOUS_LANGUAGE.md if it exists)
 - **Describe behaviors, not code** — "the sync service fails to apply the patch" not "applyPatch() throws on line 42"
 - **Reproduction steps are mandatory** — if you can't determine them, ask the user
-- **Keep it concise** — a developer should be able to read the issue in 30 seconds
+- **Keep it concise** — a developer should be able to read the issue inseconds
 
 After filing, print all issue URLs (with blocking relationships summarized) and ask: "Next issue, or are we done?"
 

@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Issue tracker: Local Markdown
 
 Issues and PRDs for this repo live as markdown files in `.scratch/`.

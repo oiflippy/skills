@@ -2,6 +2,7 @@
 name: scaffold-exercises
 description: Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 # Scaffold Exercises
 

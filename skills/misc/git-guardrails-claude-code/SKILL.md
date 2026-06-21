@@ -2,6 +2,7 @@
 name: git-guardrails-claude-code
 description: Set up Claude Code hooks to block dangerous git commands (push, reset --hard, clean, branch -D, etc.) before they execute. Use when user wants to prevent destructive git operations, add git safety hooks, or block git push/reset in Claude Code.
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 # Setup Git Guardrails
 
@@ -92,4 +93,4 @@ Run a quick test:
 echo '{"tool_input":{"command":"git push origin main"}}' | <path-to-script>
 ```
 
-Should exit with code 2 and print a BLOCKED message to stderr.
+Should exit with codeand print a BLOCKED message to stderr.

@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Deepening
 
 How to deepen a cluster of shallow modules safely, given its dependencies. Assumes the vocabulary in [SKILL.md](SKILL.md) — **module**, **interface**, **seam**, **adapter**.

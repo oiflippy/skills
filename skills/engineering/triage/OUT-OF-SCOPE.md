@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Out-of-Scope Knowledge Base
 
 The `.out-of-scope/` directory in a repo stores persistent records of rejected feature requests. It serves two purposes:

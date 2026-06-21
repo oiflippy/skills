@@ -3,6 +3,7 @@ name: edit-article
 description: Edit and improve articles by restructuring sections, improving clarity, and tightening prose. Use when user wants to edit, revise, or improve an article draft.
 disable-model-invocation: true
 ---
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 
 1. First, divide the article into sections based on its headings. Think about the main points you want to make during those sections.
 
@@ -12,4 +13,4 @@ Confirm the sections with the user.
 
 2. For each section:
 
-2a. Rewrite the section to improve clarity, coherence, and flow. Use maximum 240 characters per paragraph.
+2a. Rewrite the section to improve clarity, coherence, and flow. Use maximumcharacters per paragraph.

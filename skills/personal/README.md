@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Personal
 
 Skills tied to my own setup, not promoted in the plugin.

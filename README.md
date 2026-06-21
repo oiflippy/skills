@@ -1,3 +1,4 @@
+<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 <p>
   <a href="https://www.aihero.dev/s/skills-newsletter">
     <picture>
@@ -68,7 +69,7 @@ These are my most popular skills. They help you align with the agent before you 
 
 **The Problem**: At the start of a project, devs and the people they're building the software for (the domain experts) are usually speaking different languages.
 
-I felt the same tension with my agents. Agents are usually dropped into a project and asked to figure out the jargon as they go. So they use 20 words where 1 will do.
+I felt the same tension with my agents. Agents are usually dropped into a project and asked to figure out the jargon as they go. So they usewords where`/setup-matt-pocock-skills`will do.
 
 **The Fix** for this is a shared language. It's a document that helps agents decode the jargon used in the project.
 
