@@ -1,7 +1,7 @@
 <!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Misc
 
-Tools I keep around but rarely use.
+Tools I keep around but rarely use — not promoted in the plugin.
 
 - **[git-guardrails-claude-code](./git-guardrails-claude-code/SKILL.md)** — Set up Claude Code hooks to block dangerous git commands (push, reset --hard, clean, etc.) before they execute.
 - **[migrate-to-shoehorn](./migrate-to-shoehorn/SKILL.md)** — Migrate test files from `as` type assertions to @total-typescript/shoehorn.

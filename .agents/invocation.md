@@ -1,4 +1,3 @@
-<!-- 待翻译：未配置 openai API key，以下为原文占位 -->
 # Model-invoked vs user-invoked
 
 Every `SKILL.md` in this repo is a skill. The one axis that splits them is **invocation** — who can reach it:
