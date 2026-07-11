@@ -30,7 +30,7 @@ Reach for it once you have an agreed plan or a written spec and you want it spli
 
 The blocking edges are the whole point. They make one set of tickets read two ways, depending on the tracker:
 
-- **Local files** → a single `tickets.md` in the repo root, the edges written as text. You work it top-to-bottom, by hand, staying in the loop.
+- **Local files** → one file per ticket under `.scratch/<feature>/issues/`, numbered blockers-first, the edges written as text. You work them top-to-bottom, by hand, staying in the loop.
 - **A real tracker (GitHub, Linear)** → one issue per ticket, the edges as native blocking links (or sub-issues). Any ticket whose blockers are all done is on the **frontier** and can be grabbed — so several agents can run at once.
 
 The edges live in the ticket regardless of medium; the medium only decides whether anything acts on them in parallel. `to-tickets` produces the artifact — how you run it (sequential by hand, or a parallel fleet) is up to you.
@@ -54,4 +54,3 @@ grill-with-docs → to-spec → to-tickets → implement → code-review
 ```
 
 It sits between [to-spec](https://aihero.dev/skills-to-spec), which hands it a settled spec with user stories to slice against, and [implement](https://aihero.dev/skills-implement), which builds each ticket, driving [tdd](https://aihero.dev/skills-tdd) internally to write the tests test-first, before its [code-review](https://aihero.dev/skills-code-review) pass. Work the frontier one ticket per fresh context, clearing between them. When you're unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
-</content>
